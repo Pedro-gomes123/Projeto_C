@@ -1,54 +1,35 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+// calcular bomba
 
 
+typedef struct{
+    int Bomba;
+    int Aberta;
+    Int Vizinhos;
+}Celula;
 
-// Função para limpar a tela usando códigos ANSI
-void limpar_tela() {
-    printf("\033[2J\033[H]");
-}
+// Variaveis que definem o tamanho do tabuleiro 
 
-// Função para criar uma pausa (delay) fazendo o processador contar
-void delay() {
-   
-    for (long i = 0; i < 50000000L; i++);
-}
+celula Tabuleiro[10][10];
+int l, c, tamanho = 10;
 
-// Função para desenhar o mapa (continua a mesma lógica)
-void desenhar_mapa() {
-    int largura = 3000; // Aumentei para ficar mais visível
-    int altura = 10;
+// Iniciando o tabuleiro definido que todos as celulas estão vazias 
 
-    // Laço para cada linha
-    for (int y = 0; y < altura; y++) {
-      
-        for (int x = 0; x < largura; x++) {
-            
-            if (y == 0 || y == altura - 1 || x == 0 || x == largura - 1) {
-                printf("#"); 
-            } else {
-                printf(" "); 
-            }
+void inicioJogo(){
+    for(l = 0; l <tamanho; l = l + 1){
+        for(i = 0; i < tamanho; i = i +1){
+            jogo [l][c].bomba = 0;
+            jogo [l][c].Aberta = 0;
+            jogo[l][c].Vizinhos = 0;
         }
-
-        printf("\n");
     }
-
 }
 
 
 
-// --- A Função Principal (O Gerente) ---
+int mains(){
 
-int main() {
-    // O laço principal do jogo
-    while (1) {
-        limpar_tela();
-        desenhar_mapa();
-        
-        fflush(stdout);
-        
-        delay();
-    }
 
-    return 0;
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 // calcular bomba
 
@@ -27,9 +28,23 @@ void inicioJogo(){
     }
 }
 
+void BombaAleatoria(int n){
+    int b;
+    srand(time(NULL));
+    for(b = 0; b <= n; b = 1 +b ){
+        l = rand() % tamanho;
+        c = rand() % tamanho;
+        if(jogo[l][c.bomba == 0])
+            jogo[l][c].bomba = 1;
+        else 
+            i--;
+        jogo[l][c].bomba = 1;
+    }
+}
 
 
 int mains(){
 
+    int inicioJogo();
 
 }

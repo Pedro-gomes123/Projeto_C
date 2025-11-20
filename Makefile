@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g3 -Iinclude
 
-SRC_DIR = src
+SRC_DIR = .
 OBJ_DIR = build
 OUT_FILE = build/game
 

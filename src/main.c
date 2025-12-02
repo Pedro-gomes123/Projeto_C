@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "board.h"
 #include "fleet.h"
@@ -7,31 +8,36 @@
 #include "game.h"
 #include "rnd.h"
 
-int main() {
-    setup_random();
-    printf("\n=== BATALHA NAVAL: DUELO FINAL ===\n");
+void play_game(int board_size) {
+    Player p1;
+    Player cpu;
 
+    printf("\n--- PREPARANDO BATALHA ---\n");
+    printf("Informe apelido do Jogador 1: ");
+    scanf("%s", p1.nickname);
+    strcpy(cpu.nickname, "Computador");
 
-    Fleet frota_player; init_fleet(&frota_player);
-    Board tab_player;   init_board(&tab_player, 10, 10);
+ 
+    init_fleet(&p1.fleet);
+    init_board(&p1.board, board_size, board_size);
     
-    Fleet frota_cpu;    init_fleet(&frota_cpu);
-    Board tab_cpu;      init_board(&tab_cpu, 10, 10);
+    init_fleet(&cpu.fleet);
+    init_board(&cpu.board, board_size, board_size);
 
-    printf("Como deseja posicionar sua frota?\n");
+    printf("\nComo deseja posicionar sua frota?\n");
     printf("(A)utomatico ou (M)anual? ");
     char resp[10];
     scanf("%s", resp);
 
     if (toupper(resp[0]) == 'M') {
-        place_ships_manual(&tab_player, &frota_player);
+        place_ships_manual(&p1.board, &p1.fleet);
     } else {
-        printf("Posicionando sua frota aleatoriamente...\n");
-        place_ships_auto(&tab_player, &frota_player);
+        printf("Posicionando frota de %s automaticamente...\n", p1.nickname);
+        place_ships_auto(&p1.board, &p1.fleet);
     }
 
-    printf("O Inimigo esta posicionando os navios...\n");
-    place_ships_auto(&tab_cpu, &frota_cpu);
+    printf("O Inimigo (%s) esta posicionando os navios...\n", cpu.nickname);
+    place_ships_auto(&cpu.board, &cpu.fleet);
 
 
     int game_running = 1;
@@ -39,38 +45,96 @@ int main() {
 
     while (game_running) {
         printf("\n================ TURNO %d ================\n", turnos);
-        
-        printf("\n--- AREA INIMIGA ---\n");
-        print_board(&tab_cpu, 0);
+   
+        printf("\n--- %s (VISAO DE TIROS) ---\n", cpu.nickname);
+        print_board(&cpu.board, 0); 
 
-        printf("\n--- TUA FROTA ---\n");
-        print_board(&tab_player, 1);
+        printf("\n--- %s (SUA FROTA) ---\n", p1.nickname);
+        print_board(&p1.board, 1);  
 
-
-        printf("\n--> TUA VEZ! <--\n");
+        printf("\n--> VEZ DE %s! <--\n", p1.nickname);
         int r, c;
-        read_coordinate(&r, &c);
-        int res = fire_shot(&tab_cpu, &frota_cpu, r, c);
+        int valid_shot = 0;
         
-        if (res == 1) printf("BOOM! ACERTASTE!\n");
-        else if (res == 0) printf("Agua...\n");
-        else printf("Tiro invalido! Perdeste a vez.\n");
+        while (!valid_shot) {
+            read_coordinate(&r, &c);
 
-        if (check_victory(&frota_cpu)) {
-            printf("\n\nVITORIA! DESTRUISTE A FROTA INIMIGA EM %d TURNOS!\n", turnos);
+            if (r >= p1.board.linhas || c >= p1.board.colunas) {
+                printf("Coordenada fora dos limites! Tente novamente.\n");
+                continue;
+            }
+
+            int res = fire_shot(&cpu.board, &cpu.fleet, r, c);
+            if (res == -1) {
+                printf("Voce ja atirou ai ou local invalido. Tente novamente.\n");
+            } else {
+                valid_shot = 1;
+                if (res == 1) printf("BOOM! ACERTOU UM NAVIO INIMIGO!\n");
+                else printf("Agua...\n");
+            }
+        }
+
+        if (check_victory(&cpu.fleet)) {
+            printf("\n\n*** PARABENS %s! VITORIA EM %d TURNOS! ***\n", p1.nickname, turnos);
             break;
         }
 
-        cpu_play(&tab_player, &frota_player);
-        
-        if (check_victory(&frota_player)) {
-            printf("\n\nDERROTA! A TUA FROTA FOI DESTRUIDA!\n");
+
+        cpu_play(&p1.board, &p1.fleet);
+
+        if (check_victory(&p1.fleet)) {
+            printf("\n\n*** GAME OVER! %s VENCEU! ***\n", cpu.nickname);
             break;
         }
         turnos++;
     }
 
-    free_board(&tab_player); free_fleet(&frota_player);
-    free_board(&tab_cpu);    free_fleet(&frota_cpu);
+
+    free_board(&p1.board); free_fleet(&p1.fleet);
+    free_board(&cpu.board); free_fleet(&cpu.fleet);
+    
+    printf("\n DIgitel algo e pressione Enter...");
+
+    char temp; scanf(" %c", &temp); 
+}
+
+int main() {
+    setup_random();
+    int opcao = 0;
+    int tamanho_tabuleiro = 10; 
+
+    do {
+        printf("\n=== BATALHA NAVAL: SI 2025.2 ===\n");
+        printf("1) Novo Jogo\n");
+        printf("2) Configuracoes\n");
+        printf("3) Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                play_game(tamanho_tabuleiro);
+                break;
+            case 2:
+                printf("\n--- CONFIGURACOES ---\n");
+                printf("Tamanho atual: %dx%d\n", tamanho_tabuleiro, tamanho_tabuleiro);
+                printf("Informe novo tamanho (6 a 26): ");
+                int novo_tam;
+                scanf("%d", &novo_tam);
+                if (novo_tam >= 6 && novo_tam <= 26) {
+                    tamanho_tabuleiro = novo_tam;
+                    printf("Tamanho atualizado com sucesso!\n");
+                } else {
+                    printf("ERRO: O tamanho deve ser entre 6 e 26.\n");
+                }
+                break;
+            case 3:
+                printf("Saindo do jogo... Ate mais!\n");
+                break;
+            default:
+                printf("Opcao invalida!\n");
+        }
+    } while (opcao != 3);
+
     return 0;
 }

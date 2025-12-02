@@ -3,51 +3,41 @@
 #include <stdlib.h>
 #include "fleet.h"
 
+void add_ship_dynamic(Fleet *fleet, const char *nome, int tamanho) {
+    fleet->contador++;
+
+    Navio *temp = realloc(fleet->navios, fleet->contador * sizeof(Navio));
+    
+    if (temp == NULL) {
+        printf("Erro fatal: Falha ao realocar memoria para a frota.\n");
+        exit(1);
+    }
+    
+    fleet->navios = temp;
+
+ 
+    Navio *n = &fleet->navios[fleet->contador - 1];
+    strcpy(n->name, nome);
+    n->tamanho = tamanho;
+    n->dano = 0;
+    n->ativo = 0;
+}
 
 void init_fleet(Fleet *fleet) {
-
-    fleet-> contador = 6;
-
-    fleet->navios = malloc(6 * sizeof(Navio));
-
-    if (fleet->navios == NULL) {
-        exit(1); 
-    }
-
-    strcpy(fleet->navios[0].name, "Porta-Avioes");
-    fleet->navios[0].tamanho = 5;  
-    fleet->navios[0].dano = 0;   
-    fleet->navios[0].ativo = 0;  
-
-    strcpy(fleet->navios[1].name, "Encouracado");
-    fleet->navios[1].tamanho = 4;  
-    fleet->navios[1].dano = 0;   
-    fleet->navios[1].ativo = 0;  
-
-    strcpy(fleet->navios[2].name, "Cruzador");
-    fleet->navios[2].tamanho = 3;  
-    fleet->navios[2].dano = 0;   
-    fleet->navios[2].ativo = 0;  
-
-    strcpy(fleet->navios[3].name, "Cruzador");
-    fleet->navios[3].tamanho = 3;  
-    fleet->navios[3].dano = 0;   
-    fleet->navios[3].ativo = 0;  
-
-    strcpy(fleet->navios[4].name, "Destroyer");
-    fleet->navios[4].tamanho = 2;  
-    fleet->navios[4].dano = 0;   
-    fleet->navios[4].ativo = 0; 
-    
-    strcpy(fleet->navios[5].name, "Destroyer");
-    fleet->navios[5].tamanho = 2;  
-    fleet->navios[5].dano = 0;   
-    fleet->navios[5].ativo = 0;  
+    fleet->contador = 0;
+    fleet->navios = NULL; 
+    add_ship_dynamic(fleet, "Porta-Avioes", 5);
+    add_ship_dynamic(fleet, "Encouracado", 4);
+    add_ship_dynamic(fleet, "Cruzador", 3);
+    add_ship_dynamic(fleet, "Cruzador", 3);
+    add_ship_dynamic(fleet, "Destroyer", 2);
+    add_ship_dynamic(fleet, "Destroyer", 2);
 }
 
 void free_fleet(Fleet *fleet) {
     if (fleet->navios != NULL) {
         free(fleet->navios);
         fleet->navios = NULL;
+        fleet->contador = 0;
     }
 }
